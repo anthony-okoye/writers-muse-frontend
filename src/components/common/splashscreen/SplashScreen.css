@@ -1,0 +1,38 @@
+/* Container for Splash Screen */
+.splash-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    width: 100vw;  /* Full viewport width */
+    background-color: #f0f0f0; /* Optional: background color */
+    overflow: hidden; /* Ensure no scrollbars are visible */
+  }
+  
+  /* Animation for Moving and Bouncing */
+  @keyframes moveAndBounce {
+    0% {
+      transform: translateX(-50vw) translateY(-10px);
+      opacity: 0;
+    }
+    25% {
+      transform: translateX(50vw) translateY(-10px);
+      opacity: 1;
+    }
+    50% {
+      transform: translateX(-5vw) translateY(0);
+    }
+    75% {
+      transform: translateX(0) translateY(-15px);
+    }
+    100% {
+      transform: translateX(0) translateY(0);
+    }
+  }
+  
+  .bounce-logo {
+    animation: moveAndBounce 15s ease-in-out infinite; /* Slower duration */
+    width: 150px; /* Adjust size as needed */
+    height: auto; /* Maintain aspect ratio */
+  }
+  
