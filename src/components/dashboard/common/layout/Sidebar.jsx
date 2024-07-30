@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { MdExpandLess, MdExpandMore, MdAdd } from 'react-icons/md';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import LogoIcon from '../../../common/assets/logo.png';
 import { fetchConversations } from '../../../../services/articleService';
 import { clearConversation } from '../../../auth/redux/actions/chatActions';
 import useAuth from '../../../auth/utils/useAuth';
+import UpdatesModal from './UpdatesModal';
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -17,6 +18,9 @@ const Sidebar = () => {
   const userId = useSelector((state) => state.auth.user?.userId); // Get userId from Redux state
   const navigate = useNavigate(); // Initialize useNavigate
   const dispatch = useDispatch();
+  const { conversationId } = useParams(); // Get the conversationId from URL parameters
+  const [showModal, setShowModal] = useState(false);
+
 
   const loadConversations = useCallback(async () => {
     try {
@@ -53,8 +57,12 @@ const Sidebar = () => {
     }, 2000); // 2 seconds delay
   };
 
+  const handleModalToggle = () => {
+    setShowModal((prevShowModal) => !prevShowModal);
+  };
+
   return (
-    <div className={`h-full bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 text-white ${collapsed ? 'w-20' : 'w-64'} transition-width duration-300`}>
+    <div className={`h-full flex flex-col bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 text-white ${collapsed ? 'w-20' : 'w-64'} transition-width duration-300`}>
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center space-x-2">
           <img src={LogoIcon} alt="Logo" className={`h-10 ${collapsed ? '' : 'logo-animate'}`} />
@@ -74,24 +82,57 @@ const Sidebar = () => {
           {!collapsed && <span className="ml-2 text-white">New Chat</span>}
         </button>
       </div>
-      <ul className="p-2 overflow-y-auto h-[calc(100%-128px)]" onScroll={handleScroll}>
-        {conversations.map((conversation, index) => (
-          <li key={`${conversation.conversationId}-${index}`} className="my-2">
-            <Link to={`/chat/${conversation.conversationId}`}>
-              <button
-                className="flex items-center p-2 w-full text-left hover:bg-gradient-to-br from-cyan-400 via-sky-500 to-indigo-300 rounded-md"
-              >
-                <span className="chat-title truncate overflow-hidden whitespace-nowrap">{conversation.latestMessage.topic}</span>
-              </button>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <div className="flex-grow p-2 overflow-y-auto" onScroll={handleScroll}>
+        <ul>
+          {conversations.map((conversation, index) => (
+            <li key={`${conversation.conversationId}-${index}`} className="my-2">
+              <Link to={`/chat/${conversation.conversationId}`}>
+                <button
+                  className={`flex items-center p-2 w-full text-left rounded-md ${
+                    conversation.conversationId === conversationId
+                      ? 'bg-gradient-to-br from-cyan-400 via-sky-500 to-indigo-300 text-white'
+                      : 'hover:bg-gradient-to-br from-cyan-400 via-sky-500 to-indigo-300'
+                  }`}
+                >
+                  <span className="chat-title truncate overflow-hidden whitespace-nowrap">{conversation.latestMessage.topic}</span>
+                </button>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="p-2 h-[52rem] bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 text-black text-center">
+      {!collapsed && ( // Conditionally render the button based on `collapsed` state
+      <div className="flex flex-col leading-tight items-center justify-center h-full">
+          <div className="text-2xl mt-1 flex items-center">
+            {/* Updated section */}
+          <button
+            type="button"
+            onClick={handleModalToggle}
+            className="inline-flex items-center text-sm font-medium text-white py-2 px-4 rounded-full transition-colors duration-300 hover:bg-gradient-to-br from-cyan-400 via-sky-500 to-indigo-300 hover:bg-gradient-to-br from-cyan-500 via-sky-600 to-indigo-400"
+          >
+            Coming Updates
+            {showModal ? (
+                <MdExpandLess className="ml-1" />
+              ) : (
+                <MdExpandMore className="ml-1" />
+              )}
+          </button>
+          </div>
+        </div>
+        )}
+      </div>
       {loading && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
           <div className="text-white text-lg">Loading...</div>
         </div>
       )}
+      {/* Modal */}
+      <UpdatesModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        //onSubscribe={handleSubscribe}
+      />
     </div>
   );
 };

@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../auth/utils/useAuth';
 import { LogoutIcon } from '../../common/icons/Icons';
+import { MdExpandLess } from 'react-icons/md';
+import UpdatesModal from './layout/UpdatesModal';
 
 const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
 
   // Extract user details
   const firstName = user?.firstName || 'FirstName';
@@ -20,7 +23,7 @@ const Header = () => {
   return (
     <div className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
       <div className="relative flex items-center space-x-4">
-        <div className="relative">
+        {/*<div className="relative">
           <span className="absolute text-green-500 right-0 bottom-0">
             <svg width="20" height="20">
               <circle cx="8" cy="8" r="8" fill="currentColor"></circle>
@@ -31,12 +34,20 @@ const Header = () => {
             alt="User Avatar" 
             className="w-10 sm:w-16 h-10 sm:h-16 rounded-full" 
           />
-        </div>
+        </div>*/}
         <div className="flex flex-col leading-tight">
           <div className="text-2xl mt-1 flex items-center">
-            <span className="text-gray-700 mr-3">{`${firstName} ${lastName}`}</span>
+            {/* Updated section */}
+          {/*<button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="inline-flex items-center text-sm font-medium text-gray-900"
+          >
+            Updates
+            <MdExpandLess className="ml-1" />
+          </button>*/}
           </div>
-          <span className="text-lg text-gray-600">{email}</span>
+          {/*<span className="text-lg text-gray-600">{email}</span>*/}
         </div>
       </div>
       <div className="flex items-center space-x-2">
@@ -65,6 +76,12 @@ const Header = () => {
           </svg>
         </button> */}
       </div>
+      {/* Modal */}
+      <UpdatesModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        //onSubscribe={handleSubscribe}
+      />
     </div>
   );
 };
